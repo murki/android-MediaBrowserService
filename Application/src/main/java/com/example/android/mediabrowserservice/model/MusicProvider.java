@@ -59,7 +59,7 @@ public class MusicProvider {
 
 //    private static final String CATALOG_URL =
 //        "http://storage.googleapis.com/automotive-media/music.json";
-    private static final String CATALOG_URL = "https://firebasestorage.googleapis.com/v0/b/project-8042746893150109988.appspot.com/o/music.json?alt=media&token=d73992ee-4b89-4ff2-b93e-5133961f6d83";
+    private static final String CATALOG_URL = "https://firebasestorage.googleapis.com/v0/b/project-8042746893150109988.appspot.com/o/music.json?alt=media&token=260f77b8-da44-4df1-ab15-8aed30cc8cff";
 
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
 
@@ -98,22 +98,22 @@ public class MusicProvider {
         mMusicListById = new ConcurrentHashMap<>();
         mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         // Firebase init
-        firebaseStorage = FirebaseStorage.getInstance();
-        firebaseAuth = FirebaseAuth.getInstance();
-        // authenticate
-        firebaseAuth.signInAnonymously()
-                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        Log.d(TAG, "signInAnonymously:onComplete:" + authResult.getUser().getUid());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "signInAnonymously:onFailure:", e);
-                    }
-                });
+//        firebaseStorage = FirebaseStorage.getInstance();
+//        firebaseAuth = FirebaseAuth.getInstance();
+//        // authenticate
+//        firebaseAuth.signInAnonymously()
+//                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+//                    @Override
+//                    public void onSuccess(AuthResult authResult) {
+//                        Log.d(TAG, "signInAnonymously:onComplete:" + authResult.getUser().getUid());
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.w(TAG, "signInAnonymously:onFailure:", e);
+//                    }
+//                });
     }
 
     /**
@@ -323,6 +323,7 @@ public class MusicProvider {
         String artist = json.getString(JSON_ARTIST);
         String genre = json.getString(JSON_GENRE);
         String source = json.getString(JSON_SOURCE);
+        String image = json.getString(JSON_IMAGE);
         int trackNumber = json.getInt(JSON_TRACK_NUMBER);
         int totalTrackCount = json.getInt(JSON_TOTAL_TRACK_COUNT);
         int duration = json.getInt(JSON_DURATION) * 1000; // ms
@@ -340,6 +341,7 @@ public class MusicProvider {
         return new MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, id)
                 .putString(CUSTOM_METADATA_TRACK_SOURCE, source)
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, image)
                 .putString(MediaMetadata.METADATA_KEY_ALBUM, album)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, duration)
