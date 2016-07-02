@@ -99,21 +99,21 @@ public class MusicProvider {
         mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         // Firebase init
 //        firebaseStorage = FirebaseStorage.getInstance();
-//        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 //        // authenticate
-//        firebaseAuth.signInAnonymously()
-//                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-//                    @Override
-//                    public void onSuccess(AuthResult authResult) {
-//                        Log.d(TAG, "signInAnonymously:onComplete:" + authResult.getUser().getUid());
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "signInAnonymously:onFailure:", e);
-//                    }
-//                });
+        firebaseAuth.signInAnonymously()
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + authResult.getUser().getUid());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "signInAnonymously:onFailure:", e);
+                    }
+                });
     }
 
     /**
