@@ -59,7 +59,9 @@ public class MusicProvider {
 
 //    private static final String CATALOG_URL =
 //        "http://storage.googleapis.com/automotive-media/music.json";
-    private static final String CATALOG_URL = "https://firebasestorage.googleapis.com/v0/b/project-8042746893150109988.appspot.com/o/music.json?alt=media&token=260f77b8-da44-4df1-ab15-8aed30cc8cff";
+//    private static final String CATALOG_URL = "https://firebasestorage.googleapis.com/v0/b/project-8042746893150109988.appspot.com/o/music.json?alt=media&token=260f77b8-da44-4df1-ab15-8aed30cc8cff";
+    private static final String CATALOG_URL = "gs://project-8042746893150109988.appspot.com/music.json";
+
 
     public static final String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
 
@@ -98,22 +100,8 @@ public class MusicProvider {
         mMusicListById = new ConcurrentHashMap<>();
         mFavoriteTracks = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
         // Firebase init
-//        firebaseStorage = FirebaseStorage.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
-//        // authenticate
-        firebaseAuth.signInAnonymously()
-                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        Log.d(TAG, "signInAnonymously:onComplete:" + authResult.getUser().getUid());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "signInAnonymously:onFailure:", e);
-                    }
-                });
     }
 
     /**
@@ -254,21 +242,43 @@ public class MusicProvider {
 //                    }
 //                });
 
-        // Asynchronously load the music catalog in a separate thread
-        new AsyncTask<Void, Void, State>() {
-            @Override
-            protected State doInBackground(Void... params) {
-                retrieveMedia();
-                return mCurrentState;
-            }
-
-            @Override
-            protected void onPostExecute(State current) {
-                if (callback != null) {
-                    callback.onMusicCatalogReady(current == State.INITIALIZED);
+        // authenticate
+        if (firebaseAuth.getCurrentUser() == null) {
+            firebaseAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                @Override
+                public void onSuccess(AuthResult authResult) {
+                    Log.d(TAG, "signInAnonymously:onSuccess:" + authResult.getUser().getUid());
+                    getUriAndSyncMedia(callback);
                 }
+            });
+        } else {
+            getUriAndSyncMedia(callback);
+        }
+    }
+
+    private synchronized void getUriAndSyncMedia(final Callback callback) {
+        // allows for "dynamic" file  catalogs as long ad the firebase storage url remains the same
+        firebaseStorage.getReferenceFromUrl(CATALOG_URL).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(final Uri uri) {
+                Log.d(TAG, "getReferenceFromUrl:onSuccess:" + uri);
+                // Asynchronously load the music catalog in a separate thread
+                new AsyncTask<Void, Void, State>() {
+                    @Override
+                    protected State doInBackground(Void... params) {
+                        retrieveMedia(uri.toString());
+                        return mCurrentState;
+                    }
+
+                    @Override
+                    protected void onPostExecute(State current) {
+                        if (callback != null) {
+                            callback.onMusicCatalogReady(current == State.INITIALIZED);
+                        }
+                    }
+                }.execute();
             }
-        }.execute();
+        });
     }
 
     private synchronized void buildListsByGenre() {
@@ -286,12 +296,12 @@ public class MusicProvider {
         mMusicListByGenre = newMusicListByGenre;
     }
 
-    private synchronized void retrieveMedia() {
+    private synchronized void retrieveMedia(String downloadUrl) {
         try {
             if (mCurrentState == State.NON_INITIALIZED) {
                 mCurrentState = State.INITIALIZING;
 
-                JSONObject jsonObj = fetchJSONFromUrl(CATALOG_URL);
+                JSONObject jsonObj = fetchJSONFromUrl(downloadUrl);
                 if (jsonObj == null) {
                     return;
                 }
