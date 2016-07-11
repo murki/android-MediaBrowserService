@@ -201,47 +201,6 @@ public class MusicProvider {
             return;
         }
 
-        // get file Url
-//        final StorageReference storageRef = firebaseStorage.getReferenceFromUrl("gs://project-8042746893150109988.appspot.com/Tracks/Thea & Miguel - Yellow (Coldplay Cover).mp3");
-//        storageRef.getDownloadUrl()
-//                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-//                    @Override
-//                    public void onSuccess(Uri uri) {
-//                        Log.d(TAG, "getDownloadUrl:onSuccess:");
-////                        pathToSong = uri;
-//                        if (mCurrentState == State.NON_INITIALIZED) {
-//                            mCurrentState = State.INITIALIZING;
-//                            MediaMetadata item = new MediaMetadata.Builder()
-//                                    .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, String.valueOf(storageRef.getName().hashCode()))
-//                                    .putString(CUSTOM_METADATA_TRACK_SOURCE, uri.toString())
-//                                    .putString(MediaMetadata.METADATA_KEY_ALBUM, "Vino Jams Album")
-//                                    .putString(MediaMetadata.METADATA_KEY_ARTIST, "Vino Jams")
-//                                    .putLong(MediaMetadata.METADATA_KEY_DURATION, 221000)
-//                                    .putString(MediaMetadata.METADATA_KEY_GENRE, "Rock")
-////                                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, iconUrl)
-//                                    .putString(MediaMetadata.METADATA_KEY_TITLE, storageRef.getName())
-//                                    .putLong(MediaMetadata.METADATA_KEY_TRACK_NUMBER, 1)
-//                                    .putLong(MediaMetadata.METADATA_KEY_NUM_TRACKS, 1)
-//                                    .build();
-//                            String musicId = item.getString(MediaMetadata.METADATA_KEY_MEDIA_ID);
-//                            mMusicListById.put(musicId, new MutableMediaMetadata(musicId, item));
-//
-//                            buildListsByGenre();
-//
-//                            mCurrentState = State.INITIALIZED;
-//                        }
-//                        if (callback != null) {
-//                            callback.onMusicCatalogReady(true);
-//                        }
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.w(TAG, "getDownloadUrl:onFailure:", e);
-//                    }
-//                });
-
         // authenticate
         if (firebaseAuth.getCurrentUser() == null) {
             firebaseAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
